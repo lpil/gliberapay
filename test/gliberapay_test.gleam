@@ -1,5 +1,6 @@
 import gleam/http
 import gleam/http/request
+import gleam/httpc
 import gleam/option.{None, Some}
 import gleam/string
 import gleam/uri
@@ -99,4 +100,10 @@ pub fn download_patrons_csv_request_test() {
   |> request.to_uri
   |> uri.to_string
   |> should.equal("https://liberapay.com/gleam/patrons/public.csv")
+}
+
+pub fn readme_example_test() {
+  let req = gliberapay.download_patrons_csv_request("gleam")
+  let assert Ok(resp) = httpc.send(req)
+  let assert Ok(_patrons) = gliberapay.parse_patrons_csv(resp.body)
 }

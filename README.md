@@ -14,7 +14,7 @@ import httpc
 
 pub fn main() {
   // Download a CSV of Liberapay patrons for a recipient
-  let assert Ok(req) = gliberapay.download_patrons_csv_request("gleam")
+  let req = gliberapay.download_patrons_csv_request("gleam")
   let assert Ok(resp) = httpc.send(req)
 
   // Parse the CSV
