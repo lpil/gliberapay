@@ -1,8 +1,6 @@
 import gleam/dict
 import gleam/float
-import gleam/http
 import gleam/http/request.{type Request}
-import gleam/http/response.{type Response}
 import gleam/int
 import gleam/list
 import gleam/option.{type Option, None, Some}
@@ -11,7 +9,7 @@ import gleam/set
 import gleam/string
 import gsv
 
-const patron_csv_headers = [
+const patrons_csv_headers = [
   "pledge_date", "patron_id", "patron_username", "patron_public_name",
   "donation_currency", "weekly_amount", "patron_avatar_url",
 ]
@@ -54,7 +52,9 @@ pub type Date {
 /// Once you have a response for the request you can parse the body with the
 /// `parse_patrons_csv` function.
 ///
-pub fn download_patron_csv(recipient recipient: String) -> Request(String) {
+pub fn download_patrons_csv_request(
+  recipient recipient: String,
+) -> Request(String) {
   request.new()
   |> request.set_host("liberapay.com")
   |> request.set_path("/" <> recipient <> "/patrons/public.csv")
@@ -63,7 +63,7 @@ pub fn download_patron_csv(recipient recipient: String) -> Request(String) {
 /// Parse a Liberapay patrons CSV, as can be downloaded from the Liberapay, e.g.
 /// <https://liberapay.com/gleam/patrons/public.csv>
 ///
-/// If you want to download this in Gleam see the `download_patron_csv` function.
+/// If you want to download this in Gleam see the `download_patrons_csv` function.
 ///
 pub fn parse_patrons_csv(csv: String) -> Result(List(Patron), Error) {
   csv
@@ -156,7 +156,7 @@ fn pop_headers(
 
   let headers_set = set.from_list(headers)
   let missing =
-    list.filter(patron_csv_headers, fn(h) { !set.contains(headers_set, h) })
+    list.filter(patrons_csv_headers, fn(h) { !set.contains(headers_set, h) })
 
   case missing {
     [] -> Ok(#(headers, rest))

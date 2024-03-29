@@ -89,8 +89,8 @@ pledge_date,patron_id,patron_username,patron_public_name,donation_currency,weekl
   |> should.equal(gliberapay.InvalidValue("invalid date: 2024-"))
 }
 
-pub fn download_patron_csv_test() {
-  let request = gliberapay.download_patron_csv("gleam")
+pub fn download_patrons_csv_request_test() {
+  let request = gliberapay.download_patrons_csv_request("gleam")
 
   request.method
   |> should.equal(http.Get)
