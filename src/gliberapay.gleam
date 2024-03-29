@@ -1,7 +1,9 @@
 import gleam/dict
 import gleam/float
+import gleam/http
+import gleam/http/request.{type Request}
+import gleam/http/response.{type Response}
 import gleam/int
-import gleam/io
 import gleam/list
 import gleam/option.{type Option, None, Some}
 import gleam/result
@@ -13,8 +15,6 @@ const patron_csv_headers = [
   "pledge_date", "patron_id", "patron_username", "patron_public_name",
   "donation_currency", "weekly_amount", "patron_avatar_url",
 ]
-
-// https://liberapay.com/gleam/patrons/public.csv
 
 pub type Patron {
   Patron(
@@ -48,12 +48,23 @@ pub type Date {
   Date(year: Int, month: Int, day: Int)
 }
 
-pub fn main() {
-  io.println("Hello from gliberapay!")
+/// Construct a HTTP request to download the public Liberapay patrons CSV for
+/// the given recipient.
+///
+/// Once you have a response for the request you can parse the body with the
+/// `parse_patrons_csv` function.
+///
+pub fn download_patron_csv(recipient recipient: String) -> Request(String) {
+  request.new()
+  |> request.set_host("liberapay.com")
+  |> request.set_path("/" <> recipient <> "/patrons/public.csv")
 }
 
-// TODO: test
-// TODO: document
+/// Parse a Liberapay patrons CSV, as can be downloaded from the Liberapay, e.g.
+/// <https://liberapay.com/gleam/patrons/public.csv>
+///
+/// If you want to download this in Gleam see the `download_patron_csv` function.
+///
 pub fn parse_patrons_csv(csv: String) -> Result(List(Patron), Error) {
   csv
   |> gsv.to_lists_or_error

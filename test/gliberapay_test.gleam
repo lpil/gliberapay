@@ -1,5 +1,8 @@
+import gleam/http
+import gleam/http/request
 import gleam/option.{None, Some}
 import gleam/string
+import gleam/uri
 import gleeunit
 import gleeunit/should
 import gliberapay.{Date, Patron}
@@ -84,4 +87,16 @@ pledge_date,patron_id,patron_username,patron_public_name,donation_currency,weekl
   |> gliberapay.parse_patrons_csv
   |> should.be_error
   |> should.equal(gliberapay.InvalidValue("invalid date: 2024-"))
+}
+
+pub fn download_patron_csv_test() {
+  let request = gliberapay.download_patron_csv("gleam")
+
+  request.method
+  |> should.equal(http.Get)
+
+  request
+  |> request.to_uri
+  |> uri.to_string
+  |> should.equal("https://liberapay.com/gleam/patrons/public.csv")
 }
