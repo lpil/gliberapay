@@ -67,7 +67,7 @@ pub fn download_patrons_csv_request(
 ///
 pub fn parse_patrons_csv(csv: String) -> Result(List(Patron), Error) {
   csv
-  |> gsv.to_lists_or_error
+  |> gsv.to_lists
   |> result.map_error(InvalidCsvSyntax)
   |> result.try(extract_csv_patrons)
 }
