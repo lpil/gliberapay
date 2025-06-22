@@ -36,7 +36,7 @@ pub type Patron {
 }
 
 pub type Error {
-  InvalidCsvSyntax(String)
+  InvalidCsvSyntax(gsv.ParseError)
   MissingCsvHeaderRow
   MissingCsvHeaders(missing: List(String))
   InvalidValue(detail: String)
@@ -129,7 +129,11 @@ fn parse_amount(amount: String) -> Result(Option(Float), Error) {
     _ ->
       case float.parse(amount) {
         Ok(f) -> Ok(Some(f))
-        _ -> Error(InvalidValue("invalid float: " <> amount))
+        _ ->
+          case int.parse(amount) {
+            Ok(i) -> Ok(Some(int.to_float(i)))
+            _ -> Error(InvalidValue("invalid float: " <> amount))
+          }
       }
   }
 }

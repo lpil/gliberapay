@@ -43,13 +43,37 @@ pledge_date,patron_id,patron_username,patron_public_name,donation_currency,weekl
   ])
 }
 
+pub fn csv_parsing_with_int_test() {
+  "
+pledge_date,patron_id,patron_username,patron_public_name,donation_currency,weekly_amount,patron_avatar_url
+2024-03-15,1847917,~1847917,,CHF,4,https://seccdn.libravatar.org/avatar/0837ca2eb9199aa134c4b2fc9ce382a2?s=160&d=404
+"
+  |> string.trim
+  |> gliberapay.parse_patrons_csv
+  |> should.be_ok
+  |> should.equal([
+    Patron(
+      pledge_date: Date(2024, 3, 15),
+      patron_id: 1_847_917,
+      patron_username: "~1847917",
+      patron_public_name: None,
+      donation_currency: "CHF",
+      weekly_amount: Some(4.0),
+      patron_avatar_url: "https://seccdn.libravatar.org/avatar/0837ca2eb9199aa134c4b2fc9ce382a2?s=160&d=404",
+    ),
+  ])
+}
+
 pub fn csv_parsing_not_a_csv_test() {
   ","
   |> gliberapay.parse_patrons_csv
   |> should.be_error
-  |> should.equal(gliberapay.InvalidCsvSyntax(
-    "[line 1 column 1] of csv: Unexpected start to csv content: ,",
-  ))
+  |> should.equal(
+    gliberapay.MissingCsvHeaders([
+      "pledge_date", "patron_id", "patron_username", "patron_public_name",
+      "donation_currency", "weekly_amount", "patron_avatar_url",
+    ]),
+  )
 }
 
 pub fn csv_parsing_wrong_headers_test() {
